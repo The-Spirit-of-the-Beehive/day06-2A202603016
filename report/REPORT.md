@@ -6,7 +6,7 @@
 - **Link repo:** https://github.com/The-Spirit-of-the-Beehive/day06-2A202603016
 - **Topic:** D - Robot/drone obstacle
 - **Dataset:** data/kitti_mini
-- **Các frame đã dùng:** 000019, 000011, 000008
+- **Các frame đã dùng:** 000019, 000011, 000008.
 
 ## 1. Claim
 
