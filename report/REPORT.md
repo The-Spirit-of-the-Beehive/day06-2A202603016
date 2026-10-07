@@ -1,22 +1,16 @@
-# Báo cáo Day 6: [ĐIỀN tên đề tài ngắn]
-
-> Thay **mọi** ô có chữ ĐIỀN nằm trong ngoặc vuông bằng nội dung của bạn, xoá luôn cả dấu ngoặc vuông. Lệnh `python tools/check_submission.py` sẽ báo FAIL nếu còn sót bất kỳ chỗ nào.
+# Báo cáo Day 6: Đánh giá ảnh hưởng của tham số lọc mặt đất RANSAC và gom cụm DBSCAN đến phát hiện vật cản gần cho Robot
 
 - **Họ tên:** Đỗ Hoàng Quân
 - **MSSV:** 2A202603016
 - **Lớp:** L3B
 - **Link repo:** https://github.com/The-Spirit-of-the-Beehive/day06-2A202603016
-- **Topic:** D
-- **Dataset:** [ĐIỀN một hoặc nhiều trong: data/synthetic, data/kitti_mini, data/nuscenes_mini_subset, log riêng]
-- **Các frame đã dùng:** [ĐIỀN danh sách frame id, ví dụ 000011, 000049 hoặc scene-0103_010]
-
-> Hãy viết ngắn: mỗi mục từ 3 đến 8 dòng, ưu tiên số liệu và hình ảnh.
+- **Topic:** D - Robot/drone obstacle
+- **Dataset:** data/kitti_mini
+- **Các frame đã dùng:** 000019, 000011, 000008
 
 ## 1. Claim
 
-Một câu khẳng định kỹ thuật có thể kiểm chứng. Ví dụ: *"Lệch yaw 1° làm 12% điểm LiDAR rơi ra khỏi vật thể ở 30 m, phát hiện được bằng edge-alignment score với ngưỡng X."*
-
-[ĐIỀN]
+*Khi tăng ngưỡng khoảng cách mặt phẳng RANSAC (`distance_threshold`) từ 0.15 m lên 0.35 m, thuật toán xóa nhầm hơn 30% số điểm của các vật cản thấp trong phạm vi 10 m, làm số cụm vật cản (DBSCAN cluster) phát hiện được giảm hơn 25% và làm sai lệch khoảng cách an toàn tới vật cản gần nhất thêm hơn 0.5 m.*
 
 ## 2. Evidence
 
