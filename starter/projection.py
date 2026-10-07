@@ -32,7 +32,15 @@ def velo_to_cam(points_xyz: np.ndarray, calib: KittiCalib) -> np.ndarray:
       3. Trả về 3 cột đầu.
     Tự kiểm: một điểm velodyne (10, 0, 0) phải có z_cam ~ 10 (phía trước camera).
     """
-    raise NotImplementedError("TODO(CP2): cài đặt velo_to_cam")
+    N = points_xyz.shape[0]
+    # 1. Toạ độ đồng nhất: thêm cột 1 vào bên phải -> (N, 4)
+    ones = np.ones((N, 1), dtype=points_xyz.dtype)
+    points_homo = np.hstack([points_xyz, ones])
+    # 2. Nhân ma trận với T_cam_velo: p_cam = T @ p_velo
+    # Dạng mảng dòng: X_cam = X_velo @ T^T
+    points_cam_homo = points_homo @ calib.T_cam_velo.T
+    # 3. Trả về 3 cột đầu (N, 3)
+    return points_cam_homo[:, :3]
 
 
 def cam_to_image(points_cam: np.ndarray, P2: np.ndarray, image_shape: tuple[int, ...],
@@ -52,7 +60,41 @@ def cam_to_image(points_cam: np.ndarray, P2: np.ndarray, image_shape: tuple[int,
       3. Chia cho s để có (u, v). Chỉ chia với điểm có depth > min_depth.
       4. Lọc theo kích thước ảnh image_shape[:2] = (H, W).
     """
-    raise NotImplementedError("TODO(CP2): cài đặt cam_to_image")
+    N = points_cam.shape[0]
+    # 1. Lọc điểm NaN / Inf
+    mask_finite = np.isfinite(points_cam).all(axis=1)
+    # 2. Lọc điểm có độ sâu hợp lệ (z_cam > min_depth)
+    mask_depth = mask_finite & (points_cam[:, 2] > min_depth)
+    mask = np.zeros(N, dtype=bool)
+
+    valid_idx = np.where(mask_depth)[0]
+    if len(valid_idx) == 0:
+        return (np.empty((0, 2), dtype=np.float64),
+                np.empty((0,), dtype=np.float64),
+                mask)
+
+    # 3. Nhân P2 cho các điểm hợp lệ về độ sâu
+    pts_valid = points_cam[valid_idx]
+    ones = np.ones((len(valid_idx), 1), dtype=pts_valid.dtype)
+    pts_valid_homo = np.hstack([pts_valid, ones])
+    # [s*u, s*v, s] = [X, Y, Z, 1] @ P2^T
+    pts_img_homo = pts_valid_homo @ P2.T
+
+    # 4. Chia cho s (độ sâu)
+    s = pts_img_homo[:, 2:3]
+    uv_candidates = pts_img_homo[:, :2] / s
+
+    # 5. Lọc theo kích thước ảnh (H, W)
+    H, W = image_shape[:2]
+    u = uv_candidates[:, 0]
+    v = uv_candidates[:, 1]
+    in_bounds = (u >= 0.0) & (u < W) & (v >= 0.0) & (v < H)
+
+    # Cập nhật mask tổng
+    mask[valid_idx[in_bounds]] = True
+    uv = uv_candidates[in_bounds]
+    depth = points_cam[mask, 2]
+    return uv, depth, mask
 
 
 def project_velo_to_image(points: np.ndarray, calib: KittiCalib, image_shape: tuple[int, ...]):

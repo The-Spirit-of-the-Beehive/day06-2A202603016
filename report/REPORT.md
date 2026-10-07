@@ -20,7 +20,7 @@ Bảng hoặc plot số liệu, kèm ảnh/video demo. Ghi rõ đường dẫn f
 |---|---|---|---|
 | [ĐIỀN] | | | |
 
-![demo](../results/figures/[ĐIỀN].png)
+![demo](../results/figures/demo_obstacle_000019.png)
 
 ## 3. Failure case
 
@@ -41,7 +41,11 @@ Use-case cụ thể (ADAS / robot / drone), trade-off và bước tiếp theo.
 Các lệnh tái tạo lại toàn bộ kết quả từ repo sạch.
 
 ```bash
-[ĐIỀN]
+# 1. Kiểm tra unit-test phép chiếu
+python -m src.test_projection
+
+# 2. Chạy demo phát hiện vật cản (RANSAC + DBSCAN) trên frame 000019
+python -m src.obstacle_detector --data-root data/kitti_mini --frame 000019
 ```
 
 ## 6. Khai báo sử dụng AI
